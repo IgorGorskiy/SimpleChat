@@ -15,6 +15,7 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QListView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QScrollArea>
@@ -35,19 +36,20 @@ public:
     QHBoxLayout *horizontalLayout;
     QTabWidget *tabWidget;
     QWidget *tab_1;
-    QTextEdit *chatDisplay;
+    QVBoxLayout *vboxLayout;
+    QListView *listView;
     QSlider *packetSize;
     QLabel *packetSizeLabel;
     QTextEdit *messageInput;
     QPushButton *sendButton;
     QPushButton *sendFileButton;
     QWidget *tab_2;
-    QVBoxLayout *vboxLayout;
+    QVBoxLayout *vboxLayout1;
     QScrollArea *scrollArea;
     QWidget *scrollAreaWidgetContents;
     QVBoxLayout *eventsContainerLayout;
     QWidget *tab_3;
-    QVBoxLayout *vboxLayout1;
+    QVBoxLayout *vboxLayout2;
     QLabel *label_4;
     QVBoxLayout *verticalLayout_2;
     QLabel *label_8;
@@ -63,7 +65,7 @@ public:
     QLineEdit *pingInfo;
     QLabel *label;
     QGroupBox *groupBox;
-    QVBoxLayout *vboxLayout2;
+    QVBoxLayout *vboxLayout3;
     QLabel *label_2;
     QSpinBox *transmitInterval;
     QLabel *label_3;
@@ -84,13 +86,15 @@ public:
         tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
         tab_1 = new QWidget();
         tab_1->setObjectName(QString::fromUtf8("tab_1"));
-        chatDisplay = new QTextEdit(tab_1);
-        chatDisplay->setObjectName(QString::fromUtf8("chatDisplay"));
-        chatDisplay->setGeometry(QRect(10, 10, 551, 241));
-        chatDisplay->setReadOnly(true);
+        vboxLayout = new QVBoxLayout(tab_1);
+        vboxLayout->setObjectName(QString::fromUtf8("vboxLayout"));
+        listView = new QListView(tab_1);
+        listView->setObjectName(QString::fromUtf8("listView"));
+
+        vboxLayout->addWidget(listView);
+
         packetSize = new QSlider(tab_1);
         packetSize->setObjectName(QString::fromUtf8("packetSize"));
-        packetSize->setGeometry(QRect(10, 260, 381, 27));
         packetSize->setMinimum(128);
         packetSize->setMaximum(2048);
         packetSize->setSingleStep(64);
@@ -99,23 +103,34 @@ public:
         packetSize->setOrientation(Qt::Horizontal);
         packetSize->setTickPosition(QSlider::TicksBelow);
         packetSize->setTickInterval(128);
+
+        vboxLayout->addWidget(packetSize);
+
         packetSizeLabel = new QLabel(tab_1);
         packetSizeLabel->setObjectName(QString::fromUtf8("packetSizeLabel"));
-        packetSizeLabel->setGeometry(QRect(410, 270, 311, 20));
+
+        vboxLayout->addWidget(packetSizeLabel);
+
         messageInput = new QTextEdit(tab_1);
         messageInput->setObjectName(QString::fromUtf8("messageInput"));
-        messageInput->setGeometry(QRect(10, 299, 561, 111));
+
+        vboxLayout->addWidget(messageInput);
+
         sendButton = new QPushButton(tab_1);
         sendButton->setObjectName(QString::fromUtf8("sendButton"));
-        sendButton->setGeometry(QRect(0, 420, 321, 31));
+
+        vboxLayout->addWidget(sendButton);
+
         sendFileButton = new QPushButton(tab_1);
         sendFileButton->setObjectName(QString::fromUtf8("sendFileButton"));
-        sendFileButton->setGeometry(QRect(330, 420, 231, 31));
+
+        vboxLayout->addWidget(sendFileButton);
+
         tabWidget->addTab(tab_1, QString());
         tab_2 = new QWidget();
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
-        vboxLayout = new QVBoxLayout(tab_2);
-        vboxLayout->setObjectName(QString::fromUtf8("vboxLayout"));
+        vboxLayout1 = new QVBoxLayout(tab_2);
+        vboxLayout1->setObjectName(QString::fromUtf8("vboxLayout1"));
         scrollArea = new QScrollArea(tab_2);
         scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
         scrollArea->setMinimumSize(QSize(450, 0));
@@ -129,17 +144,17 @@ public:
         eventsContainerLayout->setObjectName(QString::fromUtf8("eventsContainerLayout"));
         scrollArea->setWidget(scrollAreaWidgetContents);
 
-        vboxLayout->addWidget(scrollArea);
+        vboxLayout1->addWidget(scrollArea);
 
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QString::fromUtf8("tab_3"));
-        vboxLayout1 = new QVBoxLayout(tab_3);
-        vboxLayout1->setObjectName(QString::fromUtf8("vboxLayout1"));
+        vboxLayout2 = new QVBoxLayout(tab_3);
+        vboxLayout2->setObjectName(QString::fromUtf8("vboxLayout2"));
         label_4 = new QLabel(tab_3);
         label_4->setObjectName(QString::fromUtf8("label_4"));
 
-        vboxLayout1->addWidget(label_4);
+        vboxLayout2->addWidget(label_4);
 
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
@@ -202,21 +217,21 @@ public:
         verticalLayout_2->addLayout(horizontalLayout_2);
 
 
-        vboxLayout1->addLayout(verticalLayout_2);
+        vboxLayout2->addLayout(verticalLayout_2);
 
         label = new QLabel(tab_3);
         label->setObjectName(QString::fromUtf8("label"));
 
-        vboxLayout1->addWidget(label);
+        vboxLayout2->addWidget(label);
 
         groupBox = new QGroupBox(tab_3);
         groupBox->setObjectName(QString::fromUtf8("groupBox"));
-        vboxLayout2 = new QVBoxLayout(groupBox);
-        vboxLayout2->setObjectName(QString::fromUtf8("vboxLayout2"));
+        vboxLayout3 = new QVBoxLayout(groupBox);
+        vboxLayout3->setObjectName(QString::fromUtf8("vboxLayout3"));
         label_2 = new QLabel(groupBox);
         label_2->setObjectName(QString::fromUtf8("label_2"));
 
-        vboxLayout2->addWidget(label_2);
+        vboxLayout3->addWidget(label_2);
 
         transmitInterval = new QSpinBox(groupBox);
         transmitInterval->setObjectName(QString::fromUtf8("transmitInterval"));
@@ -224,12 +239,12 @@ public:
         transmitInterval->setMaximum(1000);
         transmitInterval->setValue(10);
 
-        vboxLayout2->addWidget(transmitInterval);
+        vboxLayout3->addWidget(transmitInterval);
 
         label_3 = new QLabel(groupBox);
         label_3->setObjectName(QString::fromUtf8("label_3"));
 
-        vboxLayout2->addWidget(label_3);
+        vboxLayout3->addWidget(label_3);
 
         maxThreads = new QSpinBox(groupBox);
         maxThreads->setObjectName(QString::fromUtf8("maxThreads"));
@@ -237,10 +252,10 @@ public:
         maxThreads->setMaximum(10);
         maxThreads->setValue(2);
 
-        vboxLayout2->addWidget(maxThreads);
+        vboxLayout3->addWidget(maxThreads);
 
 
-        vboxLayout1->addWidget(groupBox);
+        vboxLayout2->addWidget(groupBox);
 
         tabWidget->addTab(tab_3, QString());
 
@@ -253,7 +268,7 @@ public:
 
         retranslateUi(ChatWindow);
 
-        tabWidget->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(ChatWindow);

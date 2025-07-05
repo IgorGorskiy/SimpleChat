@@ -13,12 +13,16 @@ SOURCES += \
     eventnotificationwidget.cpp \
     main.cpp \
     ChatWindow.cpp \
+    messagedelegate.cpp \
+    messagemodel.cpp \
     messageworker.cpp
 
 HEADERS += \
     ChatWindow.h \
     Structs.h \
     eventnotificationwidget.h \
+    messagedelegate.h \
+    messagemodel.h \
     messageworker.h
 
 FORMS += \

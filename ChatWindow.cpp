@@ -30,8 +30,17 @@ ChatWindow::ChatWindow(ConnectionSettings con, QWidget *parent)
     m_commands.initializeCommands();
 
     // Настраиваем отображение чата
-    ui->chatDisplay->setReadOnly(true);
-    ui->chatDisplay->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    m_messageModel = new MessageModel(this);
+    ui->listView->setModel(m_messageModel);
+    ui->listView->setItemDelegate(new MessageDelegate(this));
+    ui->listView->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    ui->listView->setSpacing(5);
+    ui->listView->setStyleSheet("background: #F5F5F5; border: none;");
+    ui->listView->setResizeMode(QListView::Adjust); // Автоподстройка
+    ui->listView->setWordWrap(true); // Перенос слов
+    ui->listView->setUniformItemSizes(false); // Разные размеры элементов
+
+    // Заменяем chatDisplay на наш ListView
     // Initialize UDP socket
     udpSocket = new QUdpSocket(this);
     connect(udpSocket, &QUdpSocket::readyRead, this, &ChatWindow::readPendingDatagrams);
@@ -43,6 +52,7 @@ ChatWindow::ChatWindow(ConnectionSettings con, QWidget *parent)
     updateTimer = new QTimer(this);
     updateTimer->setInterval(1000);
     updateTimer->start();
+    //connect(updateTimer, &QTimer::timeout, this, [this](){ui->listView->update();});
 
     m_threadPool.setMaxThreadCount(5); // Максимум 5 одновременных отправок
 
@@ -56,6 +66,12 @@ ChatWindow::~ChatWindow()
 {
     delete ui;
 }
+
+void ChatWindow::resizeEvent(QResizeEvent *event) {
+    QMainWindow::resizeEvent(event);
+    ui->listView->doItemsLayout(); // Пересчет layout
+}
+
 
 void ChatWindow::bindSocket(const quint16 &newPort)
 {
@@ -82,7 +98,8 @@ void ChatWindow::Commands::initializeCommands()
         {"/getlocalport", [this](const QString&) { processGetLocalPort(); }},
         {"/getremoteport", [this](const QString&) { processGetRemotePort(); }},
         {"/getremoteaddress", [this](const QString&) { processGetRemoteAddress(); }},
-        {"/testevent", [this](const QString&) { processTestEvent(); }}
+        {"/testevent", [this](const QString&) { processTestEvent(); }},
+        {"/say", [this](const QString& args) { processDisplayMessage(args); }}
     };
 }
 
@@ -102,7 +119,7 @@ void ChatWindow::Commands::processCommand(QString& command)
     if (commandHandlers.contains(cmd)) {
         commandHandlers[cmd](args);
     } else {
-        m_parent->displayMessage("Неизвестная команда. Введите /help для списка команд");
+        m_parent->displayMessage("Неизвестная команда. Введите /help для списка команд", true, Message::CommandOutput);
     }
 }
 
@@ -110,30 +127,30 @@ void ChatWindow::Commands::processSetLocalPort(const QString& port)
 {
     quint16 newPort = port.toUInt();
     m_parent->bindSocket(newPort);
-    m_parent->displayMessage("local port: " + QString::number(m_parent->connectionSettings.localPort));
+    m_parent->displayMessage("local port: " + QString::number(m_parent->connectionSettings.localPort), true, Message::CommandOutput);
 }
 void ChatWindow::Commands::processSetRemotePort(const QString& port)
 {
     quint16 newPort = port.toUInt();
     m_parent->connectionSettings.remotePort = newPort;
-    m_parent->displayMessage("remote port: " + QString::number(m_parent->connectionSettings.remotePort));
+    m_parent->displayMessage("remote port: " + QString::number(m_parent->connectionSettings.remotePort), true, Message::CommandOutput);
 }
 void ChatWindow::Commands::processSetRemoteAddress(const QString& address)
 {
     m_parent->connectionSettings.remoteAddress.setAddress(address);
-    m_parent->displayMessage("remote address: " + m_parent->connectionSettings.remoteAddress.toString());
+    m_parent->displayMessage("remote address: " + m_parent->connectionSettings.remoteAddress.toString(), true, Message::CommandOutput);
 }
 void ChatWindow::Commands::processGetLocalPort()
 {
-    m_parent->displayMessage("local port: " + QString::number(m_parent->connectionSettings.localPort));
+    m_parent->displayMessage("local port: " + QString::number(m_parent->connectionSettings.localPort), true, Message::CommandOutput);
 }
 void ChatWindow::Commands::processGetRemotePort()
 {
-    m_parent->displayMessage("remote port: " + QString::number(m_parent->connectionSettings.remotePort));
+    m_parent->displayMessage("remote port: " + QString::number(m_parent->connectionSettings.remotePort), true, Message::CommandOutput);
 }
 void ChatWindow::Commands::processGetRemoteAddress()
 {
-    m_parent->displayMessage("remote address: " + m_parent->connectionSettings.remoteAddress.toString());
+    m_parent->displayMessage("remote address: " + m_parent->connectionSettings.remoteAddress.toString(), true, Message::CommandOutput);
 }
 void ChatWindow::Commands::processHelp()
 {
@@ -146,14 +163,20 @@ void ChatWindow::Commands::processHelp()
                         "/getlocalport [порт] - узнать текущий локальный порт\n"
                         "/getremoteport [порт] - узнать текущий порт получателя\n"
                         "/getremoteaddress [адрес] - узнать текущий адрес получателя\n"
-                        "/testevent - вызвать тестовое событие";
-    m_parent->displayMessage(helpText, true);
+                        "/testevent - вызвать тестовое событие"
+                        "/say [текст] - отобразить сообщение";
+    m_parent->displayMessage(helpText, true, Message::CommandOutput);
 }
 void ChatWindow::Commands::processClear() {
-    m_parent->ui->chatDisplay->clear();
+    //m_parent->ui->chatDisplay->clear();
 }
 void ChatWindow::Commands::processTestEvent(){
     m_parent->createEventNotification("me", EventType::FileTransferRequestRecieved, "хочешь файл?");
+}
+
+void ChatWindow::Commands::processDisplayMessage(const QString& text){
+    QString messageId = QUuid::createUuid().toString();
+    m_parent->displayMessage(text, false, Message::CommandOutput);
 }
 
 void ChatWindow::on_sendButton_clicked()
@@ -264,11 +287,13 @@ void ChatWindow::processDatagram(const QByteArray &datagram, const QHostAddress 
         }
         // Удаляем из очереди
         incompleteMessages.remove(header.messageId);
+        QString messageId;
         QTime time;
         switch (header.messageType) {
         case MessageType::TextMessage:
             // Отображаем сообщение
-            displayMessage(QString::fromUtf8(fullMessage), false);
+            messageId = QUuid::createUuid().toString();
+            displayMessage(QString::fromUtf8(fullMessage), false, Message::None);
             sendAck(header, connectionSettings.remoteAddress, connectionSettings.remotePort);
             break;
         case MessageType::FileChunk:
@@ -333,13 +358,12 @@ void ChatWindow::processAck(const QString& sender, AckPacket ackPacket){
     if (m_pendingMessages.contains(messageId)) {
         QString message = m_pendingMessages.value(messageId).second;
         m_pendingMessages.remove(messageId);
-        displayMessage("[Delivered] " + message, true);
+        onMessageStatusChanged(messageId, Message::Delivered);
     }
 
     case MessageType::FileChunk:
     if (m_fileTransfers.contains(messageId)) {
         QString filePath = m_fileTransfers.value(messageId).first;
-        displayMessage("[File delivered] " + filePath, true);
         EventNotificationWidget *widget = m_fileTransfers.value(messageId).second;
         QString description = tr("%1 получил ваш файл:\n%2").arg(sender, filePath);
         widget->setEventData(description, sender, EventType::FileDelivered);
@@ -446,7 +470,7 @@ void ChatWindow::sendMessage(const QString &message)
     m_threadPool.start(worker);
 
     // Отображаем статус
-    displayMessage("[Sending...] " + message, true);
+    displayMessage(message, true, Message::Sending, messageId);
 }
 
 void ChatWindow::askToSendFile(const QString &filePath)
@@ -527,7 +551,7 @@ void ChatWindow::sendFile(quint32 messageId) {
     QString filePath = m_fileTransfers.value(messageId).first;
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        displayMessage("File open error: " + file.errorString(), true);
+        QMessageBox::critical(this, "Error", "Не удалось открыть файл по пути:" + filePath);
         return;
     }
 
@@ -574,7 +598,7 @@ void ChatWindow::sendFile(quint32 messageId) {
             [this, totalPackets, eventWidget](quint16 packetId) {
         onPacketSent(totalPackets, packetId, eventWidget);
     });
-
+/*
     connect(worker, &MessageWorker::finished, this, [this, messageId](quint32) {
         displayMessage("[File sent] " + m_fileTransfers.value(messageId).first, true);
     });
@@ -583,10 +607,8 @@ void ChatWindow::sendFile(quint32 messageId) {
         displayMessage("[File error] " + m_fileTransfers.value(messageId).first + ": " + error, true);
         m_fileTransfers.remove(messageId);
     });
-
+*/
     m_threadPool.start(worker);
-
-    displayMessage("[Sending file] " + fileName, true);
 }
 
 void ChatWindow::onPacketSent(qint16 totalPackets, quint16 packetId, EventNotificationWidget *eventWidget) {
@@ -653,15 +675,15 @@ void ChatWindow::onMessageSent(quint32 messageId) {
     if (m_pendingMessages.contains(messageId)) {
         auto &messageData = m_pendingMessages[messageId];
         messageData.first = QDateTime::currentDateTime(); // Обновляем время
-        displayMessage("[Sent] " + messageData.second, true);
+        onMessageStatusChanged(messageId, Message::Sent);
     }
 }
 
 void ChatWindow::onMessageError(quint32 messageId, QString error) {
     if (m_pendingMessages.contains(messageId)) {
         QString message = m_pendingMessages.value(messageId).second;
+        onMessageStatusChanged(messageId, Message::Error);
         m_pendingMessages.remove(messageId);
-        displayMessage("[Error] " + message + " (" + error + ")", true);
     }
 }
 
@@ -671,7 +693,7 @@ void ChatWindow::checkPendingConfirmations() {
 
     for (auto it = m_pendingMessages.begin(); it != m_pendingMessages.end(); ++it) {
         if (it.value().first.msecsTo(now) > 5000) { // 5 секунд таймаут
-            displayMessage("[Timeout] " + it.value().second, true);
+            onMessageStatusChanged(it.key(), Message::Error);
             toRemove << it.key();
         }
     }
@@ -681,19 +703,27 @@ void ChatWindow::checkPendingConfirmations() {
     }
 }
 
-void ChatWindow::displayMessage(const QString &message, bool isOutgoing)
-{
-    QString sender = isOutgoing ? "Вы" : "Собеседник";
-    QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss");
-    QString messageData = QString("<div>"
-                                  "<span style='color: #666;'>[%1] <b>%2:</b></span>"
-                                  "</div>")
-                              .arg(timestamp,
-                                   sender);
+void ChatWindow::displayMessage(const QString &text, bool isOutgoing, Message::Status status, quint32 transferId) {
+    Message msg;
+    msg.id = QUuid::createUuid().toString(); // Генерируем уникальный ID
+    msg.text = text;
+    msg.sender = isOutgoing ? "Вы" : "Собеседник";
+    msg.timestamp = QDateTime::currentDateTime();
+    msg.isOutgoing = isOutgoing;
+    msg.status = status;
 
-    ui->chatDisplay->append(messageData);
-    ui->chatDisplay->append(message + "\n");
-    ui->chatDisplay->verticalScrollBar()->setValue(ui->chatDisplay->verticalScrollBar()->maximum());
+    quint32 displayId = m_messageModel->addMessage(msg);
+    if (isOutgoing)
+        displayingMessages.insert(transferId, displayId);
+
+    // Прокручиваем к новому сообщению
+    QTimer::singleShot(100, [this]() {
+        ui->listView->scrollToBottom();
+    });
+}
+
+void ChatWindow::onMessageStatusChanged(quint32 transferId, Message::Status newStatus) {
+    m_messageModel->updateMessageStatus(displayingMessages.value(transferId), newStatus);
 }
 
 QString ChatWindow::getCurrentTimestamp()
@@ -760,16 +790,17 @@ void ChatWindow::saveReceivedFile(const QString &sender, quint32 messageId, QByt
     QString filePath = downloadsDir + "/" + ongoingDdownloads.value(messageId).first;
 
     QFile file(filePath);
+    QString description;
     if (file.open(QIODevice::WriteOnly)) {
         file.write(data);
         file.close();
-        displayMessage(QString("Файл получен: %1").arg(filePath), false);
+        description = tr("Полученный от %1 файл успешно сохранён по пути:\n%2").arg(sender, filePath);
     } else {
-        displayMessage("Ошибка сохранения файла", false);
+        description = tr("Полученный от %1 файл не удалось сохранить.\nИмя файла:%2")
+                          .arg(sender, ongoingDdownloads.value(messageId).first);;
     }
     // оповещение о завершении скачки
     EventNotificationWidget* widget = ongoingDdownloads.value(messageId).second;
-    QString description = tr("Полученный файл от %1 успешно сохранён по пути:\n%2").arg(sender, filePath);
     widget->setEventData(description, sender, EventType::FileInstalled);
     widget->showProgressBar(false);
     widget->showRejectBtn(false);

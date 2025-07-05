@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MessageWorker_t {
     QByteArrayData data[8];
-    char stringdata0[71];
+    char stringdata0[74];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -35,15 +35,15 @@ static const qt_meta_stringdata_MessageWorker_t qt_meta_stringdata_MessageWorker
 QT_MOC_LITERAL(0, 0, 13), // "MessageWorker"
 QT_MOC_LITERAL(1, 14, 10), // "packetSent"
 QT_MOC_LITERAL(2, 25, 0), // ""
-QT_MOC_LITERAL(3, 26, 5), // "bytes"
-QT_MOC_LITERAL(4, 32, 9), // "messageId"
-QT_MOC_LITERAL(5, 42, 8), // "finished"
-QT_MOC_LITERAL(6, 51, 13), // "errorOccurred"
-QT_MOC_LITERAL(7, 65, 5) // "error"
+QT_MOC_LITERAL(3, 26, 8), // "packetId"
+QT_MOC_LITERAL(4, 35, 8), // "finished"
+QT_MOC_LITERAL(5, 44, 9), // "messageId"
+QT_MOC_LITERAL(6, 54, 13), // "errorOccurred"
+QT_MOC_LITERAL(7, 68, 5) // "error"
 
     },
-    "MessageWorker\0packetSent\0\0bytes\0"
-    "messageId\0finished\0errorOccurred\0error"
+    "MessageWorker\0packetSent\0\0packetId\0"
+    "finished\0messageId\0errorOccurred\0error"
 };
 #undef QT_MOC_LITERAL
 
@@ -61,14 +61,14 @@ static const uint qt_meta_data_MessageWorker[] = {
        3,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    2,   29,    2, 0x06 /* Public */,
-       5,    1,   34,    2, 0x06 /* Public */,
-       6,    2,   37,    2, 0x06 /* Public */,
+       1,    1,   29,    2, 0x06 /* Public */,
+       4,    1,   32,    2, 0x06 /* Public */,
+       6,    2,   35,    2, 0x06 /* Public */,
 
  // signals: parameters
-    QMetaType::Void, QMetaType::LongLong, QMetaType::UInt,    3,    4,
-    QMetaType::Void, QMetaType::UInt,    4,
-    QMetaType::Void, QMetaType::UInt, QMetaType::QString,    4,    7,
+    QMetaType::Void, QMetaType::Short,    3,
+    QMetaType::Void, QMetaType::UInt,    5,
+    QMetaType::Void, QMetaType::UInt, QMetaType::QString,    5,    7,
 
        0        // eod
 };
@@ -79,7 +79,7 @@ void MessageWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         auto *_t = static_cast<MessageWorker *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->packetSent((*reinterpret_cast< qint64(*)>(_a[1])),(*reinterpret_cast< quint32(*)>(_a[2]))); break;
+        case 0: _t->packetSent((*reinterpret_cast< qint16(*)>(_a[1]))); break;
         case 1: _t->finished((*reinterpret_cast< quint32(*)>(_a[1]))); break;
         case 2: _t->errorOccurred((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         default: ;
@@ -87,7 +87,7 @@ void MessageWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (MessageWorker::*)(qint64 , quint32 );
+            using _t = void (MessageWorker::*)(qint16 );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&MessageWorker::packetSent)) {
                 *result = 0;
                 return;
@@ -153,9 +153,9 @@ int MessageWorker::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void MessageWorker::packetSent(qint64 _t1, quint32 _t2)
+void MessageWorker::packetSent(qint16 _t1)
 {
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))), const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t2))) };
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 

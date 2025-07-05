@@ -8,10 +8,13 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QListView>
+#include <QUuid>
 #include "Structs.h"
 #include "qthreadpool.h"
 #include "messageworker.h"
 #include "eventnotificationwidget.h"
+#include "messagedelegate.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChatWindow;}
 QT_END_NAMESPACE
@@ -26,6 +29,7 @@ public:
     ChatWindow(ConnectionSettings con, QWidget *parent);
     ~ChatWindow();
 private slots:
+    void resizeEvent(QResizeEvent *event);
     void on_sendButton_clicked();
     void readPendingDatagrams();
     void on_packetSize_valueChanged(int value);
@@ -42,10 +46,12 @@ private slots:
     void onPacketSent(qint16 totalPackets, quint16 packetId, EventNotificationWidget *eventWidget);
     void onSendFileButtonClicked();
 private:
+    MessageModel *m_messageModel;
     QThreadPool m_threadPool;
     QMap<quint32, QPair<QDateTime, QString>> m_pendingMessages;
     QMap<quint32, QPair<QString, EventNotificationWidget*>> m_fileTransfers; // Для отслеживания передачи файлов
     QMap<quint32, QPair<QString, EventNotificationWidget*>> ongoingDdownloads;
+    QMap<quint32, quint32> displayingMessages; // ключ - id отправки, значение: id отображения
     ConnectionSettings connectionSettings;
     Ui::ChatWindow *ui;
     QUdpSocket *udpSocket;
@@ -65,8 +71,9 @@ private:
 
     void bindSocket(const quint16 &port);
     void sendMessage(const QString &message);
+    void displayMessage(const QString &text, bool isOutgoing, Message::Status status, quint32 transferId = NULL);
+    void onMessageStatusChanged(quint32 displayId, Message::Status newStatus);
     void sendFile(quint32 messageId);
-    void displayMessage(const QString &message, bool isOutgoing = true);
     void processDatagram(const QByteArray &datagram, const QHostAddress &sender, quint16 senderPort);
     QString getCurrentTimestamp();
     bool checkMessageCompletion(quint32 messageId, quint8 messageType);
@@ -98,6 +105,7 @@ private:
         void processGetRemotePort();
         void processGetRemoteAddress();
         void processTestEvent();
+        void processDisplayMessage(const QString& text);
         ChatWindow* m_parent;
     };
 
