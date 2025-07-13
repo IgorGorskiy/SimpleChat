@@ -9,18 +9,20 @@
 class MessageWorker : public QObject, public QRunnable {
     Q_OBJECT
 public:
-    explicit MessageWorker(const QVector<QByteArray>& datagrams,
+    explicit MessageWorker(const QVector<QByteArray> datagrams,
                            const QHostAddress& address,
                            quint16 port,
                            int transmitInterval,
                            QObject *parent = nullptr);
+
+    ~MessageWorker();
 
     void run() override; // Переопределяем метод run() вместо process()
 
     quint32 messageId() const { return m_messageId; }
 
 signals:
-    void packetSent(qint16 packetId);
+    void progressPercentage(qint8 progress);
     void finished(quint32 messageId);
     void errorOccurred(quint32 messageId, QString error);
 

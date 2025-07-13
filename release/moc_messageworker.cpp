@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_MessageWorker_t {
     QByteArrayData data[8];
-    char stringdata0[74];
+    char stringdata0[82];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,17 +33,18 @@ struct qt_meta_stringdata_MessageWorker_t {
 static const qt_meta_stringdata_MessageWorker_t qt_meta_stringdata_MessageWorker = {
     {
 QT_MOC_LITERAL(0, 0, 13), // "MessageWorker"
-QT_MOC_LITERAL(1, 14, 10), // "packetSent"
-QT_MOC_LITERAL(2, 25, 0), // ""
-QT_MOC_LITERAL(3, 26, 8), // "packetId"
-QT_MOC_LITERAL(4, 35, 8), // "finished"
-QT_MOC_LITERAL(5, 44, 9), // "messageId"
-QT_MOC_LITERAL(6, 54, 13), // "errorOccurred"
-QT_MOC_LITERAL(7, 68, 5) // "error"
+QT_MOC_LITERAL(1, 14, 18), // "progressPercentage"
+QT_MOC_LITERAL(2, 33, 0), // ""
+QT_MOC_LITERAL(3, 34, 8), // "progress"
+QT_MOC_LITERAL(4, 43, 8), // "finished"
+QT_MOC_LITERAL(5, 52, 9), // "messageId"
+QT_MOC_LITERAL(6, 62, 13), // "errorOccurred"
+QT_MOC_LITERAL(7, 76, 5) // "error"
 
     },
-    "MessageWorker\0packetSent\0\0packetId\0"
-    "finished\0messageId\0errorOccurred\0error"
+    "MessageWorker\0progressPercentage\0\0"
+    "progress\0finished\0messageId\0errorOccurred\0"
+    "error"
 };
 #undef QT_MOC_LITERAL
 
@@ -66,7 +67,7 @@ static const uint qt_meta_data_MessageWorker[] = {
        6,    2,   35,    2, 0x06 /* Public */,
 
  // signals: parameters
-    QMetaType::Void, QMetaType::Short,    3,
+    QMetaType::Void, QMetaType::SChar,    3,
     QMetaType::Void, QMetaType::UInt,    5,
     QMetaType::Void, QMetaType::UInt, QMetaType::QString,    5,    7,
 
@@ -79,7 +80,7 @@ void MessageWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         auto *_t = static_cast<MessageWorker *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->packetSent((*reinterpret_cast< qint16(*)>(_a[1]))); break;
+        case 0: _t->progressPercentage((*reinterpret_cast< qint8(*)>(_a[1]))); break;
         case 1: _t->finished((*reinterpret_cast< quint32(*)>(_a[1]))); break;
         case 2: _t->errorOccurred((*reinterpret_cast< quint32(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2]))); break;
         default: ;
@@ -87,8 +88,8 @@ void MessageWorker::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (MessageWorker::*)(qint16 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&MessageWorker::packetSent)) {
+            using _t = void (MessageWorker::*)(qint8 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&MessageWorker::progressPercentage)) {
                 *result = 0;
                 return;
             }
@@ -153,7 +154,7 @@ int MessageWorker::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void MessageWorker::packetSent(qint16 _t1)
+void MessageWorker::progressPercentage(qint8 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);

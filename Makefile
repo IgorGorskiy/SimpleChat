@@ -299,12 +299,14 @@ Makefile: SimpleChat.pro ..\..\..\..\Qt\5.15.2\msvc2019_64\mkspecs\win32-msvc\qm
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Widgets.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Gui.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Network.prl \
+		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Sql.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Core.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\qtmain.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\mkspecs\features\build_pass.prf \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Guid.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Networkd.prl \
+		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Sqld.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Cored.prl \
 		..\..\..\..\Qt\5.15.2\msvc2019_64\lib\qtmaind.prl
 	$(QMAKE) -o Makefile SimpleChat.pro -spec win32-msvc "CONFIG+=qtquickcompiler"
@@ -523,12 +525,14 @@ SimpleChat.pro:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Widgets.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Gui.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Network.prl:
+..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Sql.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Core.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\qtmain.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\mkspecs\features\build_pass.prf:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Widgetsd.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Guid.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Networkd.prl:
+..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Sqld.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\Qt5Cored.prl:
 ..\..\..\..\Qt\5.15.2\msvc2019_64\lib\qtmaind.prl:
 qmake: FORCE

@@ -3,7 +3,7 @@
 #include <QThreadPool>
 #include <QMessageBox>
 
-MessageWorker::MessageWorker(const QVector<QByteArray>& datagrams,
+MessageWorker::MessageWorker(const QVector<QByteArray> datagrams,
                              const QHostAddress& address,
                              quint16 port,
                              int transmitInterval,
@@ -25,18 +25,31 @@ MessageWorker::MessageWorker(const QVector<QByteArray>& datagrams,
     setAutoDelete(true);
 }
 
+MessageWorker::~MessageWorker(){
+}
+
 void MessageWorker::run() { // Заменяем на run()
     QUdpSocket udpSocket;
-    // ищем свободный порт
-    for (quint16 port = 12349; port < 65000; port++){
-        if (!udpSocket.bind(port, QUdpSocket::ShareAddress)) {
-            qDebug() << "Could not bind to port to send datagram. Port: " + QString::number(port);
-        }
-        else {break;}
+    // назначаем на любой свободный порт
+    if (!udpSocket.bind(0, QUdpSocket::ShareAddress)) {
+        qDebug() << "Could not bind socket send datagram";
+        emit errorOccurred(m_messageId, udpSocket.errorString());
+        return;
     }
     quint16 totalPackets = m_datagrams.size();
     // for (const auto& datagram : m_datagrams)
     for (quint16 i = 0; i < totalPackets; i++) {
+
+        // задержка вынесена наверх в надежде, что так мессаджворкер отправит сигнал об окончании своей работы быстрее,
+        // чем будет получена квитанция о доставке данного сообщения. В целом работает, но не всегда)))))
+        if (m_interval > 0) {
+            QThread::msleep(m_interval);
+        }
+        //тест потери пакетов
+        /*
+        if(i == 1)
+            continue;
+        */
         qint64 bytesSent = udpSocket.writeDatagram(m_datagrams[i], m_address, m_port);
 
         if (bytesSent == -1) {
@@ -44,13 +57,9 @@ void MessageWorker::run() { // Заменяем на run()
             return;
         }
 
-        emit packetSent(i);
+        emit progressPercentage(i*100/totalPackets);
 
-        if (m_interval > 0) {
-            QThread::msleep(m_interval);
-        }
     }
-
     emit finished(m_messageId);
     udpSocket.close();
 }

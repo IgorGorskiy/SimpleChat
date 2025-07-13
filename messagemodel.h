@@ -4,15 +4,8 @@
 #include "qdatetime.h"
 #include <QAbstractListModel>
 #include <QVector>
-
-struct Message {
-    QString id;
-    QString text;
-    QString sender;
-    QDateTime timestamp;
-    bool isOutgoing;
-    enum Status { Sending, Sent, Delivered, Error, CommandOutput, None } status;
-};
+#include "Structs.h"
+#include "qlistview.h"
 
 class MessageModel : public QAbstractListModel {
     Q_OBJECT
@@ -26,16 +19,22 @@ public:
         StatusRole
     };
 
-    explicit MessageModel(QObject *parent = nullptr);
+    explicit MessageModel(QListView *listView, QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QHash<int, QByteArray> roleNames() const override;
 
-    int addMessage(const Message &message);
-    void updateMessageStatus(quint32 id, Message::Status newStatus);
+    int addMessage(const ChatMessage &message);
+public slots:
+    void updateMessageStatus(quint32 sentMsgId, ChatMessage::Status newStatus);
+
+signals:
+    void messageReadyForDB(ChatMessage message);
 
 private:
-    QVector<Message> m_messages;
+    QListView *m_listView;
+    QVector<ChatMessage> m_messages;
+    QMap<quint32, quint32> outgoingMessages; // ключ - id отправки, значение: id отображения
 };
 #endif // MESSAGEMODEL_H

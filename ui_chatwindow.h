@@ -70,12 +70,23 @@ public:
     QSpinBox *transmitInterval;
     QLabel *label_3;
     QSpinBox *maxThreads;
+    QLabel *label_9;
+    QVBoxLayout *verticalLayout_3;
+    QLabel *label_10;
+    QLineEdit *dbName;
+    QLabel *label_11;
+    QLineEdit *dbUser;
+    QLabel *label_12;
+    QLineEdit *dbPassword;
+    QHBoxLayout *horizontalLayout_3;
+    QPushButton *connectToDB;
+    QLineEdit *dbStatus;
 
     void setupUi(QMainWindow *ChatWindow)
     {
         if (ChatWindow->objectName().isEmpty())
             ChatWindow->setObjectName(QString::fromUtf8("ChatWindow"));
-        ChatWindow->resize(600, 500);
+        ChatWindow->resize(836, 726);
         centralwidget = new QWidget(ChatWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout = new QVBoxLayout(centralwidget);
@@ -113,6 +124,8 @@ public:
 
         messageInput = new QTextEdit(tab_1);
         messageInput->setObjectName(QString::fromUtf8("messageInput"));
+        messageInput->setMaximumSize(QSize(16777215, 200));
+        messageInput->setBaseSize(QSize(400, 200));
 
         vboxLayout->addWidget(messageInput);
 
@@ -139,7 +152,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 448, 431));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 448, 28));
         eventsContainerLayout = new QVBoxLayout(scrollAreaWidgetContents);
         eventsContainerLayout->setObjectName(QString::fromUtf8("eventsContainerLayout"));
         scrollArea->setWidget(scrollAreaWidgetContents);
@@ -257,6 +270,61 @@ public:
 
         vboxLayout2->addWidget(groupBox);
 
+        label_9 = new QLabel(tab_3);
+        label_9->setObjectName(QString::fromUtf8("label_9"));
+
+        vboxLayout2->addWidget(label_9);
+
+        verticalLayout_3 = new QVBoxLayout();
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        label_10 = new QLabel(tab_3);
+        label_10->setObjectName(QString::fromUtf8("label_10"));
+
+        verticalLayout_3->addWidget(label_10);
+
+        dbName = new QLineEdit(tab_3);
+        dbName->setObjectName(QString::fromUtf8("dbName"));
+
+        verticalLayout_3->addWidget(dbName);
+
+        label_11 = new QLabel(tab_3);
+        label_11->setObjectName(QString::fromUtf8("label_11"));
+
+        verticalLayout_3->addWidget(label_11);
+
+        dbUser = new QLineEdit(tab_3);
+        dbUser->setObjectName(QString::fromUtf8("dbUser"));
+
+        verticalLayout_3->addWidget(dbUser);
+
+        label_12 = new QLabel(tab_3);
+        label_12->setObjectName(QString::fromUtf8("label_12"));
+
+        verticalLayout_3->addWidget(label_12);
+
+        dbPassword = new QLineEdit(tab_3);
+        dbPassword->setObjectName(QString::fromUtf8("dbPassword"));
+
+        verticalLayout_3->addWidget(dbPassword);
+
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
+        connectToDB = new QPushButton(tab_3);
+        connectToDB->setObjectName(QString::fromUtf8("connectToDB"));
+
+        horizontalLayout_3->addWidget(connectToDB);
+
+        dbStatus = new QLineEdit(tab_3);
+        dbStatus->setObjectName(QString::fromUtf8("dbStatus"));
+
+        horizontalLayout_3->addWidget(dbStatus);
+
+
+        verticalLayout_3->addLayout(horizontalLayout_3);
+
+
+        vboxLayout2->addLayout(verticalLayout_3);
+
         tabWidget->addTab(tab_3, QString());
 
         horizontalLayout->addWidget(tabWidget);
@@ -268,7 +336,7 @@ public:
 
         retranslateUi(ChatWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(ChatWindow);
@@ -282,15 +350,20 @@ public:
         sendFileButton->setText(QCoreApplication::translate("ChatWindow", "\320\236\321\202\320\277\321\200\320\260\320\262\320\270\321\202\321\214 \321\204\320\260\320\271\320\273", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_1), QCoreApplication::translate("ChatWindow", "Tab 1", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("ChatWindow", "Tab 2", nullptr));
-        label_4->setText(QCoreApplication::translate("ChatWindow", "Connection settings", nullptr));
+        label_4->setText(QCoreApplication::translate("ChatWindow", "Connection Settings", nullptr));
         label_8->setText(QCoreApplication::translate("ChatWindow", "\320\234\320\276\320\271 \320\260\320\264\321\200\320\265\321\201", nullptr));
         label_7->setText(QCoreApplication::translate("ChatWindow", "\320\234\320\276\320\271 \320\277\320\276\321\200\321\202", nullptr));
         label_6->setText(QCoreApplication::translate("ChatWindow", "\320\220\320\264\321\200\320\265\321\201 \320\277\320\276\320\273\321\203\321\207\320\260\321\202\320\265\320\273\321\217", nullptr));
         label_5->setText(QCoreApplication::translate("ChatWindow", "\320\237\320\276\321\200\321\202 \320\277\320\276\320\273\321\203\321\207\320\260\321\202\320\265\320\273\321\217", nullptr));
         checkConnection->setText(QCoreApplication::translate("ChatWindow", "\320\237\321\200\320\276\320\262\320\265\321\200\320\270\321\202\321\214 \321\201\320\276\320\265\320\264\320\270\320\275\320\265\320\275\320\270\320\265", nullptr));
         label->setText(QCoreApplication::translate("ChatWindow", "Transmission Settings", nullptr));
-        label_2->setText(QCoreApplication::translate("ChatWindow", "Packet interval (ms):", nullptr));
-        label_3->setText(QCoreApplication::translate("ChatWindow", "Max threads:", nullptr));
+        label_2->setText(QCoreApplication::translate("ChatWindow", "\320\230\320\275\321\202\320\265\321\200\320\262\320\260\320\273 \320\274\320\265\320\266\320\264\321\203 \320\277\320\260\320\272\320\265\321\202\320\260\320\274\320\270 (\320\262 \320\274\320\270\320\273\320\270\321\201\320\265\320\272\321\203\320\275\320\264\320\260\321\205):", nullptr));
+        label_3->setText(QCoreApplication::translate("ChatWindow", "\320\234\320\260\320\272\321\201\320\270\320\274\320\260\320\273\321\214\320\275\320\276\320\265 \320\272\320\276\320\273\320\270\321\207\320\265\321\201\321\202\320\262\320\276 \320\277\320\276\321\202\320\276\320\272\320\276\320\262 \320\264\320\273\321\217 \320\276\321\202\320\277\321\200\320\260\320\262\320\272\320\270:", nullptr));
+        label_9->setText(QCoreApplication::translate("ChatWindow", "PostgreSQL Settings", nullptr));
+        label_10->setText(QCoreApplication::translate("ChatWindow", "\320\230\320\274\321\217 \320\261\320\260\320\267\321\213 \320\264\320\260\320\275\320\275\321\213\321\205", nullptr));
+        label_11->setText(QCoreApplication::translate("ChatWindow", "\320\230\320\274\321\217 \320\277\320\276\320\273\321\214\320\267\320\276\320\262\320\260\321\202\320\265\320\273\321\217", nullptr));
+        label_12->setText(QCoreApplication::translate("ChatWindow", "\320\237\320\260\321\200\320\276\320\273\321\214", nullptr));
+        connectToDB->setText(QCoreApplication::translate("ChatWindow", "\320\237\320\276\320\264\320\272\320\273\321\216\321\207\320\270\321\202\321\214\321\201\321\217 \320\272 \320\261\320\260\320\267\320\265 \320\264\320\260\320\275\320\275\321\213\321\205", nullptr));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QCoreApplication::translate("ChatWindow", "\320\235\320\260\321\201\321\202\321\200\320\276\320\271\320\272\320\270", nullptr));
     } // retranslateUi
 

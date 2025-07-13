@@ -1,6 +1,9 @@
 #include "messagemodel.h"
 
-MessageModel::MessageModel(QObject *parent) : QAbstractListModel(parent) {}
+MessageModel::MessageModel(QListView *listView, QObject *parent)
+    : QAbstractListModel(parent),
+    m_listView(listView)
+{}
 
 int MessageModel::rowCount(const QModelIndex &parent) const {
     return parent.isValid() ? 0 : m_messages.size();
@@ -10,7 +13,7 @@ QVariant MessageModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid() || index.row() >= m_messages.size())
         return QVariant();
 
-    const Message &msg = m_messages.at(index.row());
+    const ChatMessage &msg = m_messages.at(index.row());
 
     switch (role) {
     case IdRole: return msg.id;
@@ -35,15 +38,33 @@ QHash<int, QByteArray> MessageModel::roleNames() const {
 }
 
 // возвращает id отображённого сообщения
-int MessageModel::addMessage(const Message &message) {
+int MessageModel::addMessage(const ChatMessage &message) {
     beginInsertRows(QModelIndex(), m_messages.size(), m_messages.size());
     m_messages.append(message);
     endInsertRows();
-    return m_messages.length() - 1;
+
+    // Прокручиваем к новому сообщению
+    QTimer::singleShot(100, [this]() {
+        m_listView->scrollToBottom();
+    });
+
+    int displayId = m_messages.length() - 1;
+    if(message.isOutgoing)
+        outgoingMessages.insert(message.id, displayId);
+    else
+        emit messageReadyForDB(message);
+    return displayId;
 }
 
-void MessageModel::updateMessageStatus(quint32 id, Message::Status newStatus) {
-    m_messages[id].status = newStatus;
-    QModelIndex idx = index(id);
+void MessageModel::updateMessageStatus(quint32 sentMsgId, ChatMessage::Status newStatus) {
+    int displayId = outgoingMessages.value(sentMsgId);
+    // это на случай, если статус "отправлено" придёт позже статуса "доставлено"
+    if(m_messages[displayId].status == ChatMessage::Status::Delivered)
+        return;
+
+    m_messages[displayId].status = newStatus;
+    if(newStatus == ChatMessage::Status::Delivered)
+        emit messageReadyForDB(m_messages[displayId]);
+    QModelIndex idx = index(displayId);
     emit dataChanged(idx, idx, {StatusRole});
 }

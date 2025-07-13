@@ -21,15 +21,22 @@ public:
     void showProgressBar(bool show);
     void showAcceptBtn(bool show);
     void showRejectBtn(bool show);
+    void showAbortBtn(bool show);
+    void showCancelBtn(bool show);
     void setProgressBarValue(uint value);
+    void deleteNotification();
 
 signals:
     void accepted(const QString &comment = "");
     void rejected(const QString &comment = "");
+    void canceled(const QString &comment = "");
+    void aborted(const QString &comment = "");
 
 private slots:
     void onAcceptClicked();
     void onRejectClicked();
+    void onCancelClicked();
+    void onAbortClicked();
 
 private:
     Ui::EventNotificationWidget *ui;

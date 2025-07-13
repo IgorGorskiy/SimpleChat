@@ -1,4 +1,5 @@
 #include "messagedelegate.h"
+#include <QDebug>
 
 MessageDelegate::MessageDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
 
@@ -13,7 +14,7 @@ void MessageDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     int status = index.data(MessageModel::StatusRole).toInt();
 
     // Настраиваем стиль
-    QRect rect = option.rect.adjusted(5, 5, -5, -5);
+    QRect rect = option.rect.adjusted(0, 0, 0, 0);
     QColor bubbleColor = isOutgoing ? QColor("#DCF8C6") : QColor("#FFFFFF");
     QColor textColor = Qt::black;
 
@@ -38,12 +39,12 @@ void MessageDelegate::paint(QPainter *painter, const QStyleOptionViewItem &optio
     // Рисуем статус и время
     QString statusText;
     switch(status) {
-    case Message::Sending: statusText = "🕒"; break;
-    case Message::Sent: statusText = "✓"; break;
-    case Message::Delivered: statusText = "✓✓"; break;
-    case Message::Error: statusText = "❌"; break;
-    case Message::None: statusText = ""; break;
-    case Message::CommandOutput: statusText = "ℹ️"; break;
+    case ChatMessage::Sending: statusText = "🕒"; break;
+    case ChatMessage::Sent: statusText = "✓"; break;
+    case ChatMessage::Delivered: statusText = "✓✓"; break;
+    case ChatMessage::Error: statusText = "❌"; break;
+    case ChatMessage::None: statusText = ""; break;
+    case ChatMessage::CommandOutput: statusText = "ℹ️"; break;
     }
 
     painter->drawText(rect.bottomRight() - QPoint(80, 5),
@@ -57,7 +58,7 @@ QSize MessageDelegate::sizeHint(const QStyleOptionViewItem &option, const QModel
     QFontMetrics fm(option.font);
 
     // Ширина текста = ширина ListView минус отступы
-    int textWidth = option.rect.width() - 40; // 20px слева + 20px справа
+    int textWidth = option.rect.width() - 120; // 20px слева + 20px справа
 
     // Вычисляем высоту с учетом переноса слов
     QRect textRect = fm.boundingRect(QRect(0, 0, textWidth, 0),

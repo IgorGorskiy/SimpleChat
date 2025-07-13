@@ -29,6 +29,8 @@ public:
     QHBoxLayout *horizontalLayout;
     QPushButton *btnAccept;
     QPushButton *btnReject;
+    QPushButton *btnAbort;
+    QPushButton *btnCancel;
     QProgressBar *progressBar;
 
     void setupUi(QWidget *EventNotificationWidget)
@@ -77,6 +79,7 @@ public:
         eventDescription->setMinimumSize(QSize(360, 20));
         eventDescription->setMaximumSize(QSize(16777215, 60));
         eventDescription->setBaseSize(QSize(360, 20));
+        eventDescription->setWordWrap(true);
 
         verticalLayout->addWidget(eventDescription);
 
@@ -155,6 +158,24 @@ public:
 
         horizontalLayout->addWidget(btnReject);
 
+        btnAbort = new QPushButton(verticalLayoutWidget);
+        btnAbort->setObjectName(QString::fromUtf8("btnAbort"));
+        btnAbort->setMinimumSize(QSize(0, 40));
+        btnAbort->setMaximumSize(QSize(16777215, 40));
+        btnAbort->setSizeIncrement(QSize(1, 0));
+        btnAbort->setBaseSize(QSize(0, 40));
+
+        horizontalLayout->addWidget(btnAbort);
+
+        btnCancel = new QPushButton(verticalLayoutWidget);
+        btnCancel->setObjectName(QString::fromUtf8("btnCancel"));
+        btnCancel->setMinimumSize(QSize(0, 40));
+        btnCancel->setMaximumSize(QSize(16777215, 40));
+        btnCancel->setSizeIncrement(QSize(1, 0));
+        btnCancel->setBaseSize(QSize(0, 40));
+
+        horizontalLayout->addWidget(btnCancel);
+
         horizontalLayout->setStretch(0, 10);
         horizontalLayout->setStretch(1, 10);
 
@@ -179,6 +200,8 @@ public:
         eventDescription->setText(QCoreApplication::translate("EventNotificationWidget", "TextLabel", nullptr));
         btnAccept->setText(QCoreApplication::translate("EventNotificationWidget", "Accept", nullptr));
         btnReject->setText(QCoreApplication::translate("EventNotificationWidget", "Reject", nullptr));
+        btnAbort->setText(QCoreApplication::translate("EventNotificationWidget", "Abort", nullptr));
+        btnCancel->setText(QCoreApplication::translate("EventNotificationWidget", "Cancel", nullptr));
     } // retranslateUi
 
 };

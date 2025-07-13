@@ -7,11 +7,14 @@ EventNotificationWidget::EventNotificationWidget(QWidget *parent)
 {
     ui->setupUi(this);
 
-    // Подключаем сигналы кнопок
     connect(ui->btnAccept, &QPushButton::clicked,
             this, &EventNotificationWidget::onAcceptClicked);
     connect(ui->btnReject, &QPushButton::clicked,
             this, &EventNotificationWidget::onRejectClicked);
+    connect(ui->btnCancel, &QPushButton::clicked,
+            this, &EventNotificationWidget::onCancelClicked);
+    connect(ui->btnAbort, &QPushButton::clicked,
+            this, &EventNotificationWidget::onAbortClicked);
 
     // Стилизация
     setStyleSheet("border: 1px solid #ccc; border-radius: 5px; padding: 10px;");
@@ -25,16 +28,10 @@ void EventNotificationWidget::setEventData(const QString &description,
     ui->eventDescription->setText(description);
     currentSender = sender;
     currentType = type;
-
-    // Можно добавить тип-специфичные настройки
-    if (type == EventType::FileTransferRequestRecieved) {
-        ui->btnAccept->setIcon(QIcon(":/icons/accept-file.png"));
-    }
 }
 
 void EventNotificationWidget::showProgressBar(bool show) {
     ui->progressBar->setVisible(show);
-    //adjustSize(); // Пересчитываем размеры
 }
 
 void EventNotificationWidget::setProgressBarValue(uint value) {
@@ -43,25 +40,40 @@ void EventNotificationWidget::setProgressBarValue(uint value) {
 
 void EventNotificationWidget::showAcceptBtn(bool show) {
     ui->btnAccept->setVisible(show);
-    //adjustSize(); // Пересчитываем размеры
 }
 
 void EventNotificationWidget::showRejectBtn(bool show) {
     ui->btnReject->setVisible(show);
-    //adjustSize(); // Пересчитываем размеры
+}
+void EventNotificationWidget::showAbortBtn(bool show){
+    ui->btnAbort->setVisible(show);
+}
+void EventNotificationWidget::showCancelBtn(bool show){
+    ui->btnCancel->setVisible(show);
 }
 
 void EventNotificationWidget::onAcceptClicked() {
     emit accepted();
-    this->deleteLater(); // Самоуничтожение после обработки
 }
 
 void EventNotificationWidget::onRejectClicked() {
     emit rejected();
-    this->deleteLater();
+}
+
+void EventNotificationWidget::onCancelClicked() {
+    emit canceled();
+    deleteNotification();
+}
+
+void EventNotificationWidget::onAbortClicked() {
+    emit aborted();
 }
 
 EventNotificationWidget::~EventNotificationWidget()
 {
     delete ui;
+}
+
+void EventNotificationWidget::deleteNotification() {
+    this->deleteLater();
 }
