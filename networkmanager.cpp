@@ -9,7 +9,7 @@ NetworkManager::NetworkManager(AckManager *ackMgr, ConnectionSettings settings, 
 {
     bindSocket(m_currentSettings.localPort);
     connect(m_udpSocket, &QUdpSocket::readyRead, this, &NetworkManager::readPendingDatagrams);
-    m_threadPool.setMaxThreadCount(5);
+    m_threadPool.setMaxThreadCount(2);
 }
 
 bool NetworkManager::bindSocket(quint16 newPort)
@@ -61,6 +61,7 @@ void NetworkManager::setConnectionSettings(const ConnectionSettings &settings){
         bindSocket(settings.localPort);
     if(settings.maxThreads != m_currentSettings.maxThreads)
         m_threadPool.setMaxThreadCount(settings.maxThreads);
+    qDebug() << m_threadPool.maxThreadCount();
     m_currentSettings = settings;
 }
 

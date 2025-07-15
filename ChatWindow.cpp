@@ -43,9 +43,11 @@ ChatWindow::ChatWindow(ConnectionSettings con, QWidget *parent)
             [this](){ChatWindow::onRemoteAddressValueChanged(ui->remoteAddress->text());});
 
     connect(ui->transmitInterval, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
-            &ChatWindow::onTransmitIntervalvalueChanged);
+            &ChatWindow::onTransmitIntervalValueChanged);
     connect(ui->packetSize, &QSlider::valueChanged, this,
             &ChatWindow::on_packetSize_valueChanged);
+    connect(ui->maxThreads, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), this,
+            &ChatWindow::onMaxThreadsvalueChanged);
 
 
     // Настраиваем отображение чата
@@ -195,10 +197,16 @@ void ChatWindow::on_packetSize_valueChanged(int value)
     ui->packetSizeLabel->setText(QString("Max Packet Size: %1 bytes").arg(value));
 }
 
-void ChatWindow::onTransmitIntervalvalueChanged(int value){
+void ChatWindow::onTransmitIntervalValueChanged(int value){
     composerSettings = m_messageComposer->getComposerSettings();
-    composerSettings.maxPacketSize = value;
+    composerSettings.packetInterval = value;
     m_messageComposer->setComposerSettings(composerSettings);
+}
+
+void ChatWindow::onMaxThreadsvalueChanged(int value){
+    connectionSettings = m_networkManager->getConnectionSettings();
+    connectionSettings.maxThreads = value;
+    m_networkManager->setConnectionSettings(connectionSettings);
 }
 
 void ChatWindow::onConnectToBD(){

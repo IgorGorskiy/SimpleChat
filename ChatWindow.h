@@ -43,7 +43,8 @@ private slots:
     void resizeEvent(QResizeEvent *event);
     void on_sendButton_clicked();
     void on_packetSize_valueChanged(int value);
-    void onTransmitIntervalvalueChanged(int value);
+    void onTransmitIntervalValueChanged(int value);
+    void onMaxThreadsvalueChanged(int value);
     void onRemoteAddressValueChanged(const QString& value);
     void onRemotePortValueChanged(const QString& value);
     void onMyPortValueChanged(const QString& value);
